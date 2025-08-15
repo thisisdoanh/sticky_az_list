@@ -10,7 +10,7 @@ class DefaultScrollBarSymbol extends StatelessWidget {
   final double? heightFactor;
 
   const DefaultScrollBarSymbol({
-    Key? key,
+    super.key,
     this.symbolIcon,
     this.symbol,
     required this.state,
@@ -18,8 +18,7 @@ class DefaultScrollBarSymbol extends StatelessWidget {
     this.styleActive,
     this.styleInactive,
     this.styleDeactivated,
-  })  : assert(symbol != null || symbolIcon != null),
-        super(key: key);
+  })  : assert(symbol != null || symbolIcon != null);
 
   /// style if symbol is active
   final TextStyle? styleActive;

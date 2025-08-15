@@ -33,7 +33,9 @@ class DefaultOverlaySymbol extends StatelessWidget {
       height: height,
       child: Material(
         shape: shape,
-        color: background ?? themeData.colorScheme.secondary.withOpacity(0.8),
+        color:
+            background ??
+            themeData.colorScheme.secondary.withValues(alpha: 0.8),
         child: Padding(
           padding: padding ?? EdgeInsets.zero,
           child: FittedBox(

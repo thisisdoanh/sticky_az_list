@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:sticky_az_list/src/default/default_scrollbar_symbol.dart';
 import 'package:sticky_az_list/src/enable_safe_area.dart';
 import 'package:sticky_az_list/src/grouped_item.dart';
@@ -22,7 +21,7 @@ class ScrollBar extends StatelessWidget {
   final void Function()? onSelectionEnd;
 
   const ScrollBar({
-    Key? key,
+    super.key,
     required this.items,
     required this.symbols,
     required this.symbolNotifier,
@@ -31,18 +30,23 @@ class ScrollBar extends StatelessWidget {
     this.onSelectedSymbol,
     this.onSelectionEnd,
     required this.safeArea,
-  }) : super(key: key);
+  });
 
-  _onGestureHandler(details) {
+  void _onGestureHandler(details) {
     Offset? touchPos;
     String? touchedSymbol;
 
     for (final entry in symbols.entries) {
       final key = entry.value;
-      final RenderBox? renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+      final RenderBox? renderBox =
+          key.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null) return;
-      final Offset globalLocation = renderBox.localToGlobal(Offset(0, renderBox.paintBounds.height / 2));
-      final Offset localLocation = renderBox.globalToLocal(Offset(details.globalPosition.dx, details.globalPosition.dy));
+      final Offset globalLocation = renderBox.localToGlobal(
+        Offset(0, renderBox.paintBounds.height / 2),
+      );
+      final Offset localLocation = renderBox.globalToLocal(
+        Offset(details.globalPosition.dx, details.globalPosition.dy),
+      );
       final barWidth = options.width + options.padding.horizontal;
 
       final boundsWithPadding = Rect.fromLTRB(
@@ -52,7 +56,9 @@ class ScrollBar extends StatelessWidget {
         renderBox.paintBounds.bottom,
       );
 
-      if (renderBox.paintBounds.contains(localLocation) || renderBox.paintBounds.right < barWidth && boundsWithPadding.contains(localLocation)) {
+      if (renderBox.paintBounds.contains(localLocation) ||
+          renderBox.paintBounds.right < barWidth &&
+              boundsWithPadding.contains(localLocation)) {
         touchedSymbol = entry.key;
         touchPos = globalLocation;
         break;
@@ -60,20 +66,27 @@ class ScrollBar extends StatelessWidget {
     }
 
     if (touchedSymbol != null && touchPos != null) {
-      if (!options.jumpToSymbolsWithNoEntries ? _getSymbolState(touchedSymbol) != ScrollbarItemState.deactivated : true) {
-        onSelectedSymbol?.call(TouchedSymbol(symbol: touchedSymbol, position: touchPos));
+      if (!options.jumpToSymbolsWithNoEntries
+          ? _getSymbolState(touchedSymbol) != ScrollbarItemState.deactivated
+          : true) {
+        onSelectedSymbol?.call(
+          TouchedSymbol(symbol: touchedSymbol, position: touchPos),
+        );
       }
     }
   }
 
-  _onGestureEnd([_]) {
+  void _onGestureEnd([_]) {
     onSelectionEnd?.call();
   }
 
   ScrollbarItemState _getSymbolState(String symbol) {
-    final Iterable<GroupedItem> result = items.where((item) => item.tag == symbol);
+    final Iterable<GroupedItem> result = items.where(
+      (item) => item.tag == symbol,
+    );
     if (result.isNotEmpty) {
-      if (result.first.children.isEmpty && !options.jumpToSymbolsWithNoEntries) {
+      if (result.first.children.isEmpty &&
+          !options.jumpToSymbolsWithNoEntries) {
         return ScrollbarItemState.deactivated;
       } else if (result.first.tag == symbolNotifier.value) {
         return ScrollbarItemState.active;
@@ -101,10 +114,16 @@ class ScrollBar extends StatelessWidget {
           onVerticalDragCancel: _onGestureEnd,
           onVerticalDragEnd: _onGestureEnd,
           child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(context).copyWith(scrollbars: options.scrollable, overscroll: false),
+            behavior: ScrollConfiguration.of(
+              context,
+            ).copyWith(scrollbars: options.scrollable, overscroll: false),
             child: SingleChildScrollView(
-              physics: options.scrollable ? const ScrollPhysics() : const NeverScrollableScrollPhysics(),
-              scrollDirection: options.alignment == ScrollBarAlignment.stretch ? Axis.horizontal : Axis.vertical,
+              physics: options.scrollable
+                  ? const ScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
+              scrollDirection: options.alignment == ScrollBarAlignment.stretch
+                  ? Axis.horizontal
+                  : Axis.vertical,
               child: Container(
                 padding: options.padding,
                 margin: options.margin,
@@ -122,10 +141,9 @@ class ScrollBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: symbols.entries.map((symbol) {
                         final symbolState = _getSymbolState(symbol.key);
-                        if (symbolState == ScrollbarItemState.deactivated && !options.showDeactivated) {
-                          return SizedBox.shrink(
-                            key: symbol.value,
-                          );
+                        if (symbolState == ScrollbarItemState.deactivated &&
+                            !options.showDeactivated) {
+                          return SizedBox.shrink(key: symbol.value);
                         }
                         return Flexible(
                           child: SizedBox(
@@ -133,20 +151,38 @@ class ScrollBar extends StatelessWidget {
                             key: symbol.value,
                             child: Semantics(
                               button: true,
-                              child: symbol.key == "#" && options.specialSymbolBuilder != null || symbol.key == "#" && defaultSpecialSymbolBuilder != null
-                                  ? options.specialSymbolBuilder?.call(context, symbol.key, symbolState) ??
-                                      DefaultScrollBarSymbol(
-                                        state: symbolState,
-                                        symbolIcon: defaultSpecialSymbolBuilder?.call(context, symbol.key, symbolState),
-                                        symbol: symbol.key,
-                                        heightFactor: options.heightFactor,
-                                      )
-                                  : options.symbolBuilder?.call(context, symbol.key, symbolState) ??
-                                      DefaultScrollBarSymbol(
-                                        symbol: symbol.key,
-                                        state: symbolState,
-                                        heightFactor: options.heightFactor,
-                                      ),
+                              child:
+                                  symbol.key == "#" &&
+                                          options.specialSymbolBuilder !=
+                                              null ||
+                                      symbol.key == "#" &&
+                                          defaultSpecialSymbolBuilder != null
+                                  ? options.specialSymbolBuilder?.call(
+                                          context,
+                                          symbol.key,
+                                          symbolState,
+                                        ) ??
+                                        DefaultScrollBarSymbol(
+                                          state: symbolState,
+                                          symbolIcon:
+                                              defaultSpecialSymbolBuilder?.call(
+                                                context,
+                                                symbol.key,
+                                                symbolState,
+                                              ),
+                                          symbol: symbol.key,
+                                          heightFactor: options.heightFactor,
+                                        )
+                                  : options.symbolBuilder?.call(
+                                          context,
+                                          symbol.key,
+                                          symbolState,
+                                        ) ??
+                                        DefaultScrollBarSymbol(
+                                          symbol: symbol.key,
+                                          state: symbolState,
+                                          heightFactor: options.heightFactor,
+                                        ),
                             ),
                           ),
                         );

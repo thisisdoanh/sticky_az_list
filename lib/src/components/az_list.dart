@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-
 import 'package:sticky_az_list/src/typedef.dart';
 
 import '../../sticky_az_list.dart';
@@ -16,7 +15,7 @@ class AZList extends StatelessWidget {
   final EnableSafeArea safeArea;
 
   const AZList({
-    Key? key,
+    super.key,
     required this.options,
     this.physics,
     required this.controller,
@@ -24,7 +23,7 @@ class AZList extends StatelessWidget {
     this.viewKey,
     this.defaultSpecialSymbolBuilder,
     required this.safeArea,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,42 +38,59 @@ class AZList extends StatelessWidget {
         physics: physics,
         slivers: [
           SliverToBoxAdapter(child: options.beforeList),
-          ...data
-              .map(
-                (item) => SliverOffstage(
-                  offstage: !item.children.isNotEmpty && !options.showSectionHeaderForEmptySections,
-                  sliver: SliverSafeArea(
-                    bottom: safeArea.bottom,
-                    top: safeArea.top,
-                    left: safeArea.left,
-                    right: safeArea.right,
-                    sliver: SliverStickyHeader(
-                      key: item.key,
-                      sticky: options.stickySectionHeader,
-                      header: options.showSectionHeader
-                          ? item.tag == "#" && options.specialSymbolBuilder != null || item.tag == "#" && defaultSpecialSymbolBuilder != null
-                              ? options.specialSymbolBuilder?.call(context, item.tag, null) ??
+          ...data.map(
+            (item) => SliverOffstage(
+              offstage:
+                  !item.children.isNotEmpty &&
+                  !options.showSectionHeaderForEmptySections,
+              sliver: SliverSafeArea(
+                bottom: safeArea.bottom,
+                top: safeArea.top,
+                left: safeArea.left,
+                right: safeArea.right,
+                sliver: SliverStickyHeader(
+                  key: item.key,
+                  sticky: options.stickySectionHeader,
+                  header: options.showSectionHeader
+                      ? item.tag == "#" &&
+                                    options.specialSymbolBuilder != null ||
+                                item.tag == "#" &&
+                                    defaultSpecialSymbolBuilder != null
+                            ? options.specialSymbolBuilder?.call(
+                                    context,
+                                    item.tag,
+                                    null,
+                                  ) ??
                                   DefaultHeaderSymbol(
                                     alignment: options.headerAligment,
-                                    symbolIcon: defaultSpecialSymbolBuilder?.call(context, item.tag, null),
-                                    backgroundColor: options.headerColor ?? options.backgroundColor ?? themeData.colorScheme.primary,
+                                    symbolIcon: defaultSpecialSymbolBuilder
+                                        ?.call(context, item.tag, null),
+                                    backgroundColor:
+                                        options.headerColor ??
+                                        options.backgroundColor ??
+                                        themeData.colorScheme.primary,
                                     symbol: item.tag,
                                   )
-                              : options.listHeaderBuilder?.call(context, item.tag) ??
+                            : options.listHeaderBuilder?.call(
+                                    context,
+                                    item.tag,
+                                  ) ??
                                   DefaultHeaderSymbol(
                                     alignment: options.headerAligment,
-                                    backgroundColor: options.headerColor ?? options.backgroundColor ?? themeData.colorScheme.primary,
+                                    backgroundColor:
+                                        options.headerColor ??
+                                        options.backgroundColor ??
+                                        themeData.colorScheme.primary,
                                     symbol: item.tag,
                                   )
-                          : const SizedBox.shrink(),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate(item.children.toList()),
-                      ),
-                    ),
+                      : const SizedBox.shrink(),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(item.children.toList()),
                   ),
                 ),
-              )
-              .toList(),
+              ),
+            ),
+          ),
           SliverToBoxAdapter(child: options.afterList),
         ],
       ),

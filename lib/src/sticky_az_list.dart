@@ -22,14 +22,13 @@ class StickyAzList<T extends TaggedItem> extends StatefulWidget {
   final StickyAzOptions options;
 
   const StickyAzList({
-    Key? key,
+    super.key,
     required this.items,
     this.physics,
     required this.builder,
     StickyAzOptions? options,
     this.controller,
-  })  : options = options ?? const StickyAzOptions(),
-        super(key: key);
+  })  : options = options ?? const StickyAzOptions();
 
   @override
   State<StickyAzList<T>> createState() => _StickyAzListState<T>();
