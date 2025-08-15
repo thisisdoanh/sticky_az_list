@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:sticky_az_list/src/typedef.dart';
 import 'package:sticky_az_list/sticky_az_list.dart';
+import 'performance_options.dart';
 
 class StickyAzOptions {
   const StickyAzOptions({
@@ -12,6 +13,9 @@ class StickyAzOptions {
     this.overlayOptions = const OverlayOptions(),
     this.padding,
     this.safeArea = const EnableSafeArea(),
+    this.cacheExtent,
+    this.itemExtent,
+    this.performanceOptions = const PerformanceOptions(),
   });
 
   /// Start with special symbol.
@@ -34,4 +38,28 @@ class StickyAzOptions {
 
   /// Enable [SafeArea] for the list.
   final EnableSafeArea safeArea;
+
+  /// Cache extent for performance optimization.
+  /// Controls how many pixels beyond the visible area should be cached.
+  /// Smaller values use less memory but may cause more frequent rebuilds.
+  /// For large lists (10k+ items), consider values between 100-500.
+  final double? cacheExtent;
+
+  /// Fixed item extent for performance optimization.
+  /// If all your list items have the same height, setting this will
+  /// significantly improve scrolling performance and memory usage.
+  /// Use SliverFixedExtentList internally for better performance.
+  final double? itemExtent;
+
+  /// Advanced performance options for large lists.
+  /// Use PerformanceOptions.largeList for 10k+ items,
+  /// PerformanceOptions.veryLargeList for 50k+ items,
+  /// or PerformanceOptions.fixedHeight(height) for fixed-height items.
+  final PerformanceOptions performanceOptions;
+
+  /// Convenience getter for effective cache extent
+  double? get effectiveCacheExtent => cacheExtent ?? performanceOptions.cacheExtent;
+
+  /// Convenience getter for effective item extent
+  double? get effectiveItemExtent => itemExtent ?? performanceOptions.itemExtent;
 }

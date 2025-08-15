@@ -5,6 +5,7 @@ import 'package:sticky_az_list/src/typedef.dart';
 import '../../sticky_az_list.dart';
 import '../grouped_item.dart';
 import '../tagged_item.dart';
+import '../options/performance_options.dart';
 
 class AZList<T extends TaggedItem> extends StatelessWidget {
   final ListOptions options;
@@ -15,6 +16,9 @@ class AZList<T extends TaggedItem> extends StatelessWidget {
   final SymbolNullableStateBuilder? defaultSpecialSymbolBuilder;
   final EnableSafeArea safeArea;
   final Widget Function(BuildContext context, int index, T item) itemBuilder;
+  final double? cacheExtent;
+  final double? itemExtent;
+  final PerformanceOptions performanceOptions;
 
   const AZList({
     super.key,
@@ -26,11 +30,18 @@ class AZList<T extends TaggedItem> extends StatelessWidget {
     this.defaultSpecialSymbolBuilder,
     required this.safeArea,
     required this.itemBuilder,
+    this.cacheExtent,
+    this.itemExtent,
+    this.performanceOptions = const PerformanceOptions(),
   });
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
+    
+    // Effective values from performance options
+    final effectiveCacheExtent = cacheExtent ?? performanceOptions.cacheExtent ?? 250.0;
+    final effectiveItemExtent = itemExtent ?? performanceOptions.itemExtent;
 
     return Container(
       color: options.backgroundColor,
@@ -39,6 +50,8 @@ class AZList<T extends TaggedItem> extends StatelessWidget {
         key: viewKey,
         controller: controller,
         physics: physics,
+        cacheExtent: effectiveCacheExtent,
+        shrinkWrap: performanceOptions.shrinkWrap,
         slivers: [
           SliverToBoxAdapter(child: options.beforeList),
           ...data.map(
@@ -87,14 +100,30 @@ class AZList<T extends TaggedItem> extends StatelessWidget {
                                     symbol: item.tag,
                                   )
                       : const SizedBox.shrink(),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return itemBuilder(context, index, item.items[index]);
-                      },
-                      childCount: item.itemCount,
-                    ),
-                  ),
+                  sliver: effectiveItemExtent != null
+                      ? SliverFixedExtentList(
+                          itemExtent: effectiveItemExtent!,
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return itemBuilder(context, index, item.items[index]);
+                            },
+                            childCount: item.itemCount,
+                            addAutomaticKeepAlives: performanceOptions.addAutomaticKeepAlives,
+                            addRepaintBoundaries: performanceOptions.addRepaintBoundaries,
+                            addSemanticIndexes: performanceOptions.addSemanticIndexes,
+                          ),
+                        )
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return itemBuilder(context, index, item.items[index]);
+                            },
+                            childCount: item.itemCount,
+                            addAutomaticKeepAlives: performanceOptions.addAutomaticKeepAlives,
+                            addRepaintBoundaries: performanceOptions.addRepaintBoundaries,
+                            addSemanticIndexes: performanceOptions.addSemanticIndexes,
+                          ),
+                        ),
                 ),
               ),
             ),

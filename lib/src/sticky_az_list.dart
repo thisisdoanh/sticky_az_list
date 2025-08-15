@@ -102,6 +102,9 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
               safeArea: widget.options.safeArea,
               defaultSpecialSymbolBuilder: widget.options.specialSymbolBuilder,
               itemBuilder: widget.builder,
+              cacheExtent: widget.options.effectiveCacheExtent,
+              itemExtent: widget.options.effectiveItemExtent,
+              performanceOptions: widget.options.performanceOptions,
             ),
           ),
           ScrollBar<T>(

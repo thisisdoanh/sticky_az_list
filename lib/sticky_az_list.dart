@@ -4,6 +4,7 @@ export './src/options/sticky_az_options.dart';
 export './src/options/list_options.dart';
 export './src/options/scroll_bar_options.dart';
 export './src/options/overlay_options.dart';
+export './src/options/performance_options.dart';
 
 export './src/default/default_header_symbol.dart';
 export './src/default/default_overlay_symbol.dart';
