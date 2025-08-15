@@ -39,7 +39,7 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
   final GlobalKey scrollBarKey = GlobalKey();
   final SymbolNotifier symbolNotifier = SymbolNotifier();
   late final ScrollController controller;
-  List<GroupedItem> groupedList = [];
+  List<GroupedItem<T>> groupedList = [];
   SymbolOverlay? symbolOverlay;
   late Map<String, GlobalKey> symbols;
 
@@ -80,7 +80,7 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
         ? symbols.keys.first
         : groupedList
             .firstWhereOrNull(
-              (e) => e.children.isNotEmpty,
+              (e) => e.items.isNotEmpty,
             )
             ?.tag;
   }
@@ -93,7 +93,7 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
         crossAxisAlignment: _getScrollAligment(),
         children: [
           Expanded(
-            child: AZList(
+            child: AZList<T>(
               viewKey: listKey,
               data: groupedList,
               controller: controller,
@@ -101,9 +101,10 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
               options: widget.options.listOptions,
               safeArea: widget.options.safeArea,
               defaultSpecialSymbolBuilder: widget.options.specialSymbolBuilder,
+              itemBuilder: widget.builder,
             ),
           ),
-          ScrollBar(
+          ScrollBar<T>(
             key: scrollBarKey,
             items: groupedList,
             options: widget.options.scrollBarOptions,
@@ -131,16 +132,16 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
     };
   }
 
-  List<GroupedItem> _groupedItems() {
-    final List<GroupedItem> groupList = [];
+  List<GroupedItem<T>> _groupedItems() {
+    final List<GroupedItem<T>> groupList = [];
     final List<T> data = widget.items.toList();
     final groups = groupBy(data, (item) => SymbolCharExt.fromString(item.sortName()).value);
 
     for (var symbolChar in symbols.entries) {
       final String symbol = symbolChar.key;
-      final groupedItem = GroupedItem(
+      final groupedItem = GroupedItem<T>(
         tag: symbol,
-        children: groups.entries.firstWhereOrNull((group) => group.key == symbol)?.value.map((item) => widget.builder.call(context, widget.items.indexOf(item), item)).toList() ?? [],
+        items: groups.entries.firstWhereOrNull((group) => group.key == symbol)?.value ?? [],
       );
       groupList.add(groupedItem);
     }

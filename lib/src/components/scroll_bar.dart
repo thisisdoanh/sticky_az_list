@@ -9,8 +9,8 @@ import '../controler.dart';
 import '../enums.dart';
 import '../options/scroll_bar_options.dart';
 
-class ScrollBar extends StatelessWidget {
-  final Iterable<GroupedItem> items;
+class ScrollBar<T> extends StatelessWidget {
+  final Iterable<GroupedItem<T>> items;
   final Map<String, GlobalKey> symbols;
   final SymbolNotifier symbolNotifier;
   final ScrollBarOptions options;
@@ -81,11 +81,11 @@ class ScrollBar extends StatelessWidget {
   }
 
   ScrollbarItemState _getSymbolState(String symbol) {
-    final Iterable<GroupedItem> result = items.where(
+    final Iterable<GroupedItem<T>> result = items.where(
       (item) => item.tag == symbol,
     );
     if (result.isNotEmpty) {
-      if (result.first.children.isEmpty &&
+      if (result.first.items.isEmpty &&
           !options.jumpToSymbolsWithNoEntries) {
         return ScrollbarItemState.deactivated;
       } else if (result.first.tag == symbolNotifier.value) {

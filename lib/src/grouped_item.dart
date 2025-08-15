@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-class GroupedItem {
+class GroupedItem<T> {
   final String tag;
   final GlobalKey key;
-  final Iterable<Widget> children;
+  final List<T> items;
+  final int itemCount;
 
   GroupedItem({
     required this.tag,
-    required this.children,
-  }) : key = GlobalKey();
+    required this.items,
+  }) : key = GlobalKey(),
+       itemCount = items.length;
 }

@@ -4,15 +4,17 @@ import 'package:sticky_az_list/src/typedef.dart';
 
 import '../../sticky_az_list.dart';
 import '../grouped_item.dart';
+import '../tagged_item.dart';
 
-class AZList extends StatelessWidget {
+class AZList<T extends TaggedItem> extends StatelessWidget {
   final ListOptions options;
   final ScrollPhysics? physics;
   final ScrollController controller;
-  final List<GroupedItem> data;
+  final List<GroupedItem<T>> data;
   final GlobalKey? viewKey;
   final SymbolNullableStateBuilder? defaultSpecialSymbolBuilder;
   final EnableSafeArea safeArea;
+  final Widget Function(BuildContext context, int index, T item) itemBuilder;
 
   const AZList({
     super.key,
@@ -23,6 +25,7 @@ class AZList extends StatelessWidget {
     this.viewKey,
     this.defaultSpecialSymbolBuilder,
     required this.safeArea,
+    required this.itemBuilder,
   });
 
   @override
@@ -41,7 +44,7 @@ class AZList extends StatelessWidget {
           ...data.map(
             (item) => SliverOffstage(
               offstage:
-                  !item.children.isNotEmpty &&
+                  !item.items.isNotEmpty &&
                   !options.showSectionHeaderForEmptySections,
               sliver: SliverSafeArea(
                 bottom: safeArea.bottom,
@@ -85,7 +88,12 @@ class AZList extends StatelessWidget {
                                   )
                       : const SizedBox.shrink(),
                   sliver: SliverList(
-                    delegate: SliverChildListDelegate(item.children.toList()),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return itemBuilder(context, index, item.items[index]);
+                      },
+                      childCount: item.itemCount,
+                    ),
                   ),
                 ),
               ),
