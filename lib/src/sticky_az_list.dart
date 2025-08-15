@@ -9,6 +9,7 @@ import './constants.dart';
 import './controler.dart';
 
 import 'components/az_list.dart';
+import 'components/ultra_az_list.dart';
 import 'components/scroll_bar.dart';
 import 'components/symbol_overlay.dart';
 import 'grouped_item.dart';
@@ -93,19 +94,32 @@ class _StickyAzListState<T extends TaggedItem> extends State<StickyAzList<T>> {
         crossAxisAlignment: _getScrollAligment(),
         children: [
           Expanded(
-            child: AZList<T>(
-              viewKey: listKey,
-              data: groupedList,
-              controller: controller,
-              physics: widget.physics,
-              options: widget.options.listOptions,
-              safeArea: widget.options.safeArea,
-              defaultSpecialSymbolBuilder: widget.options.specialSymbolBuilder,
-              itemBuilder: widget.builder,
-              cacheExtent: widget.options.effectiveCacheExtent,
-              itemExtent: widget.options.effectiveItemExtent,
-              performanceOptions: widget.options.performanceOptions,
-            ),
+            child: widget.options.useUltraPerformance
+                ? UltraAZList<T>(
+                    viewKey: listKey,
+                    data: groupedList,
+                    controller: controller,
+                    physics: widget.physics,
+                    options: widget.options.listOptions,
+                    safeArea: widget.options.safeArea,
+                    defaultSpecialSymbolBuilder: widget.options.specialSymbolBuilder,
+                    itemBuilder: widget.builder,
+                    performanceOptions: widget.options.ultraPerformanceOptions ?? 
+                        const UltraPerformanceOptions(),
+                  )
+                : AZList<T>(
+                    viewKey: listKey,
+                    data: groupedList,
+                    controller: controller,
+                    physics: widget.physics,
+                    options: widget.options.listOptions,
+                    safeArea: widget.options.safeArea,
+                    defaultSpecialSymbolBuilder: widget.options.specialSymbolBuilder,
+                    itemBuilder: widget.builder,
+                    cacheExtent: widget.options.effectiveCacheExtent,
+                    itemExtent: widget.options.effectiveItemExtent,
+                    performanceOptions: widget.options.performanceOptions,
+                  ),
           ),
           ScrollBar<T>(
             key: scrollBarKey,

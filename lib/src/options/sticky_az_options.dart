@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sticky_az_list/src/typedef.dart';
 import 'package:sticky_az_list/sticky_az_list.dart';
 import 'performance_options.dart';
+import 'ultra_performance_options.dart';
 
 class StickyAzOptions {
   const StickyAzOptions({
@@ -16,6 +17,8 @@ class StickyAzOptions {
     this.cacheExtent,
     this.itemExtent,
     this.performanceOptions = const PerformanceOptions(),
+    this.ultraPerformanceOptions,
+    this.useUltraPerformance = false,
   });
 
   /// Start with special symbol.
@@ -62,4 +65,31 @@ class StickyAzOptions {
 
   /// Convenience getter for effective item extent
   double? get effectiveItemExtent => itemExtent ?? performanceOptions.itemExtent;
+
+  /// Ultra performance options for extremely large lists (100k+ items).
+  /// Use UltraPerformanceOptions.ultraLarge for 260k+ items.
+  final UltraPerformanceOptions? ultraPerformanceOptions;
+
+  /// Enable ultra performance mode for extremely large lists.
+  /// This will use aggressive optimizations that may reduce features
+  /// but dramatically improve performance for 100k+ items.
+  final bool useUltraPerformance;
+
+  /// Factory constructor for ultra large lists (26 groups x 10k items = 260k items)
+  factory StickyAzOptions.ultraLarge({
+    double? itemHeight,
+    ListOptions? listOptions,
+    ScrollBarOptions? scrollBarOptions,
+    OverlayOptions? overlayOptions,
+  }) {
+    return StickyAzOptions(
+      useUltraPerformance: true,
+      ultraPerformanceOptions: itemHeight != null 
+        ? UltraPerformanceOptions.ultraLargeFixed(itemHeight)
+        : UltraPerformanceOptions.ultraLarge,
+      listOptions: listOptions ?? const ListOptions(),
+      scrollBarOptions: scrollBarOptions ?? const ScrollBarOptions(),
+      overlayOptions: overlayOptions ?? const OverlayOptions(),
+    );
+  }
 }

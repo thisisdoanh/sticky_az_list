@@ -1,6 +1,8 @@
 import 'package:az_listview/app/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../ultra_large_example.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -10,7 +12,7 @@ class App extends StatelessWidget {
       theme: ThemeData.light(useMaterial3: true).copyWith(
         appBarTheme: const AppBarTheme(scrolledUnderElevation: 0),
       ),
-      home: const HomeScreen(),
+      home: const UltraLargeExample(),
     );
   }
 }
